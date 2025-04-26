@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?php
 session_start();  
 
@@ -42,10 +43,18 @@ if (isset($_SESSION['message'])) {
     <form action="" method="POST"> 
         <input type="text" name="username" placeholder="Username" required value=""> 
         <input type="password" name="password" placeholder="Password" required value=""> 
+=======
+<div id="login-panel">
+    <h3>Login</h3>
+    <form action="login.php" method="POST">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+>>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a
         <button type="submit">Login</button>
     </form>
     <a href="registerr.php" id="register-btn">Register</a>
 </div>
+<<<<<<< HEAD
 <?php else: ?>
 <div id="login-panel">
     <h3>Welcome, <?php echo htmlspecialchars($_SESSION['user']); ?>!</h3>
@@ -68,3 +77,19 @@ if (isset($_SESSION['message'])) {
 <div class="line"></div>
 
 <?php include 'kokosy/footer.php'; ?>
+=======
+
+
+<?php include 'kokosy/header.php'; 
+?>
+<img src="images/main.jpg" alt="" />
+  <div id="content">
+        <h2>Welcome to Silent Hill Community</h2>
+        <p>Step into the fog and explore the depths of the Silent Hill universe. This community is a haven for fans of the legendary horror franchise, where we discuss theories, share memories, and uncover the mysteries that haunt the town.</p>
+        <p>Whether you're a longtime fan or new to the world of Silent Hill, you'll find a welcoming space here to share your thoughts, art, and experiences.</p>
+        <p>Stay updated on the latest news, deep-dive into discussions, and connect with fellow survivors of the fog.</p>
+        <p><strong>Dare to enter? The nightmare awaits.</strong></p>
+    </div>    <div class="line"></div>
+<?php include 'kokosy/footer.php';
+?>
+>>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a

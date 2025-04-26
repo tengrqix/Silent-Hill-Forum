@@ -1,11 +1,18 @@
 <?php
+<<<<<<< HEAD
 session_start(); 
 
+=======
+>>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST["username"];
     $password = md5($_POST["password"]); 
     $email = $_POST["email"];
 
+<<<<<<< HEAD
+=======
+   
+>>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a
     $conn = new mysqli("localhost", "root", "", "silent_hill_forum");
 
     if ($conn->connect_error) {
@@ -13,6 +20,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     
+<<<<<<< HEAD
     $checkEmail = "SELECT id FROM users WHERE email = '$email'";
     $resultEmail = $conn->query($checkEmail);
 
@@ -41,3 +49,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     exit();
 }
 ?>
+=======
+    $sql = "INSERT INTO users (username, password, email) VALUES ('$username', '$password', '$email')";
+
+    if ($conn->query($sql) === TRUE) {
+        echo "Registration successful! <a href='index.php'>Go back</a>";
+    } else {
+        echo "Error: " . $conn->error;
+    }
+
+    $conn->close();
+}
+?>
+>>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a
