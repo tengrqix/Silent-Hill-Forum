@@ -1,64 +1,52 @@
 <?php
-<<<<<<< HEAD
-session_start(); 
+session_start();
+require_once 'classes/Database.php';
 
-=======
->>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $username = $_POST["username"];
-    $password = md5($_POST["password"]); 
-    $email = $_POST["email"];
+    $username = trim($_POST["username"]);
+    $password = trim($_POST["password"]);
+    $email = trim($_POST["email"]);
 
-<<<<<<< HEAD
-=======
-   
->>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a
-    $conn = new mysqli("localhost", "root", "", "silent_hill_forum");
+    $conn = (new Database())->connect();
 
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
+
+    $stmt = $conn->prepare("SELECT id FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $resultEmail = $stmt->get_result();
+
+    if ($resultEmail && $resultEmail->num_rows > 0) {
+        $_SESSION['message'] = "Email already exists.";
+        header("Location: registerr.php");
+        exit();
     }
 
     
-<<<<<<< HEAD
-    $checkEmail = "SELECT id FROM users WHERE email = '$email'";
-    $resultEmail = $conn->query($checkEmail);
+    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $resultUsername = $stmt->get_result();
 
-   
-    $checkUsername = "SELECT id FROM users WHERE username = '$username'";
-    $resultUsername = $conn->query($checkUsername);
-
-    if ($resultEmail->num_rows > 0) {
-        $_SESSION['message'] = "Email already taken.";
-    } elseif ($resultUsername->num_rows > 0) {
-        $_SESSION['message'] = "Username already taken";
-    } else {
-        $sql = "INSERT INTO users (username, password, email) VALUES ('$username', '$password', '$email')";
-        
-        if ($conn->query($sql) === TRUE) {
-            $_SESSION['message'] = "Registration was sucessfull";
-        } else {
-            $_SESSION['message'] = "Error: " . $conn->error;
-        }
+    if ($resultUsername && $resultUsername->num_rows > 0) {
+        $_SESSION['message'] = "Username already exists.";
+        header("Location: registerr.php");
+        exit();
     }
 
-    $conn->close();
+    
+    $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-   
+    
+    $stmt = $conn->prepare("INSERT INTO users (username, password, email) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $username, $hashedPassword, $email);
+
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "Registration successful. You can now login.";
+    } else {
+        $_SESSION['message'] = "Error: " . $conn->error;
+    }
+
     header("Location: registerr.php");
     exit();
 }
 ?>
-=======
-    $sql = "INSERT INTO users (username, password, email) VALUES ('$username', '$password', '$email')";
-
-    if ($conn->query($sql) === TRUE) {
-        echo "Registration successful! <a href='index.php'>Go back</a>";
-    } else {
-        echo "Error: " . $conn->error;
-    }
-
-    $conn->close();
-}
-?>
->>>>>>> 4c9a175e21cc61150a4193bfe900bbc481503d9a

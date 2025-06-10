@@ -9,6 +9,7 @@
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
     text-align: center;
+    z-index: 10; /* pridane aby sa nezakryval menu */
 }
 
 /* H3 (nadpis v login paneli) */
@@ -151,13 +152,14 @@ ul#menu {
     margin: auto;
     padding: 0;
     list-style-type: none;
-    position: relative;
+    position: relative; /* pridane pre istotu stacking context */
     display: block;
     height: 40px;
     font-size: 13px;
     font-weight: bold;
     background-color: #6c6374;
     overflow:hidden;
+    z-index: 1; /* pridane */
 }
 
 #menu li {
@@ -204,5 +206,3 @@ ul#menu {
     width: 778px;
     margin: 0 auto;
 }
-
-

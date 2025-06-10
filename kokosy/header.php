@@ -1,6 +1,11 @@
 <<<<<<< HEAD
 <?php
 include_once 'functions.php';
+
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+
 $pages = [
     'Home' => 'index.php',
     'About' => 'about.php',
@@ -8,7 +13,6 @@ $pages = [
     'Forum' => 'forum.php',
     'Walkthrough' => '#',
     'Downloads' => '#',
-    
 ];
 ?>
 =======
@@ -28,6 +32,10 @@ $pages = [
         <ul id="menu">
 <<<<<<< HEAD
             <?php echo get_menu($pages); ?>
+
+            <?php if (isset($_SESSION['user'])): ?>
+                <li class="profile"><a href="profile.php">My Profile</a></li>
+            <?php endif; ?>
         </ul>
     </div>
 =======
