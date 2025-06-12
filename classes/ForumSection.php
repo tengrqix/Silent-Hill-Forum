@@ -45,13 +45,5 @@ class ForumSection
         $stmt->execute();
     }
 
-    public function getPostsBySection(int $sectionId): array
-    {
-        $stmt = $this->conn->prepare("SELECT * FROM posts WHERE section_id = ? ORDER BY created_at DESC");
-        $stmt->bind_param("i", $sectionId);
-        $stmt->execute();
-        $result = $stmt->get_result();
 
-        return $result->fetch_all(MYSQLI_ASSOC);
-    }
 }
