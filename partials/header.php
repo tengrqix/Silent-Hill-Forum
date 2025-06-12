@@ -1,9 +1,9 @@
 <?php
-include_once 'functions.php';
-
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
+
+require_once __DIR__ . '/../classes/Menu.php';
 
 $pages = [
     'Home' => 'index.php',
@@ -19,17 +19,17 @@ $pages = [
 <head>
     <title>Silent Hill Forum</title>
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-    <link rel="stylesheet" type="text/css" href="style.css" />
+    <link rel="stylesheet" type="text/css" href="/stranka/css/style.css" />
 </head>
 <body>
 <div id="wrapper">
     <div id="nav">
         <h1>Silent Hill Forum</h1>
         <ul id="menu">
-            <?php echo get_menu($pages); ?>
-
+            <?php echo Menu::getMenu($pages); ?>
             <?php if (isset($_SESSION['user'])): ?>
-                <li class="profile"><a href="profile.php">My Profile</a></li>
+                <li class="profile"><a href="/stranka/profile.php">My Profile</a></li>
+                <li><a href="/stranka/index.php?logout=true">Logout</a></li>
             <?php endif; ?>
         </ul>
     </div>

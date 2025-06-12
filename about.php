@@ -1,4 +1,4 @@
-<?php include 'kokosy/header.php'; 
+<?php include 'partials/header.php'; 
 ?>
 <div id="nav-imageabout"></div>
 
@@ -22,6 +22,6 @@
         </div>
     </div>
 <div class="linehhh"></div>
-<?php include 'kokosy/footer.php';
+<?php include 'partials/footer.php';
 ?>
 

@@ -1,4 +1,4 @@
-<?php include 'kokosy/header.php'; 
+<?php include 'partials/header.php'; 
 ?>
 
   <div id="content">
@@ -16,5 +16,5 @@
         </ul>
     </div>
     <div class="line"></div>
-<?php include 'kokosy/footer.php';
+<?php include 'partials/footer.php';
 ?>

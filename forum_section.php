@@ -1,6 +1,7 @@
 <?php
 session_start();
-require_once 'classes/ForumSection.php';
+require_once 'classes/Database.php';
+require_once 'classes/Comment.php';
 
 if (!isset($_GET['id'])) {
     echo "Section not found.";
@@ -8,21 +9,15 @@ if (!isset($_GET['id'])) {
 }
 
 $sectionId = (int)$_GET['id'];
-$sectionObj = new ForumSection();
+$db = new Database();
+$conn = $db->connect();
 
 
-$loggedUserId = null;
-if (isset($_SESSION['user'])) {
-    $conn = (new Database())->connect();
-    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
-    $stmt->bind_param("s", $_SESSION['user']);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $userData = $result->fetch_assoc();
-    $loggedUserId = $userData['id'];
-}
-
-$section = $sectionObj->getSectionById($sectionId);
+$stmt = $conn->prepare("SELECT * FROM forum_sections WHERE id = ?");
+$stmt->bind_param("i", $sectionId);
+$stmt->execute();
+$result = $stmt->get_result();
+$section = $result->fetch_assoc();
 
 if (!$section) {
     echo "Section not found.";
@@ -30,11 +25,18 @@ if (!$section) {
 }
 
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user']) && isset($_POST['action']) && $_POST['action'] === 'add_comment') {
-    $content = trim($_POST['comment']);
+$stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+$stmt->bind_param("s", $_SESSION['user']);
+$stmt->execute();
+$userResult = $stmt->get_result();
+$userData = $userResult->fetch_assoc();
+$loggedUserId = $userData['id'];
 
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['comment'])) {
+    $content = trim($_POST['comment']);
     if (!empty($content)) {
-        $sectionObj->addComment($sectionId, $loggedUserId, $content);
+        Comment::addComment($sectionId, $loggedUserId, $content);
         header("Location: forum_section.php?id=$sectionId");
         exit;
     } else {
@@ -42,24 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_SESSION['user']) && isset($
     }
 }
 
-if (isset($_GET['delete_comment']) && isset($_SESSION['user'])) {
+
+if (isset($_GET['delete_comment'])) {
     $commentIdToDelete = (int)$_GET['delete_comment'];
+    $commentToDelete = Comment::getCommentById($commentIdToDelete);
 
-    $comments = $sectionObj->getCommentsBySection($sectionId);
-    foreach ($comments as $comment) {
-        if ($comment['id'] == $commentIdToDelete && $comment['user_id'] == $loggedUserId) {
-            $sectionObj->deleteComment($commentIdToDelete);
-            header("Location: forum_section.php?id=$sectionId");
-            exit;
-        }
+    if ($commentToDelete && $commentToDelete['user_id'] == $loggedUserId) {
+        Comment::deleteComment($commentIdToDelete);
+        header("Location: forum_section.php?id=$sectionId");
+        exit;
+    } else {
+        echo "<p style='color:red;'>You cannot delete this comment.</p>";
     }
-
-    echo "<p style='color:red;'>You cannot delete this comment.</p>";
 }
 
-$comments = $sectionObj->getCommentsBySection($sectionId);
 
-include 'kokosy/header.php';
+$comments = Comment::getCommentsBySection($sectionId);
+
+include 'partials/header.php';
 ?>
 
 <h2><?php echo htmlspecialchars($section['name']); ?></h2>
@@ -77,15 +79,14 @@ include 'kokosy/header.php';
                     <img src="images/profile_pics/default.png" alt="Profile Pic" width="40" height="40" style="border-radius:50%; margin-right:10px;">
                 <?php endif; ?>
 
-                <strong><?php echo htmlspecialchars($comment['username']); ?></strong>&nbsp;wrote on <?php echo $comment['created_at']; ?>
-
+                <strong><?php echo htmlspecialchars($comment['username']); ?></strong> wrote on <?php echo $comment['created_at']; ?>:
             </div>
-            <p style="margin-left: 50px;"><?php echo nl2br(htmlspecialchars($comment['content'])); ?></p>
+            <p><?php echo nl2br(htmlspecialchars($comment['content'])); ?></p>
 
-            <?php if (isset($_SESSION['user']) && $comment['user_id'] == $loggedUserId): ?>
-                <div style="margin-left: 50px;">
-                    <a href='forum_section.php?id=<?php echo $sectionId; ?>&delete_comment=<?php echo $comment['id']; ?>' style='color:red;'>Delete Comment</a> |
-                    <a href='edit_comment.php?section_id=<?php echo $sectionId; ?>&comment_id=<?php echo $comment['id']; ?>'>Edit Comment</a>
+            <?php if ($comment['user_id'] == $loggedUserId): ?>
+                <div>
+                    <a href="forum_actions/edit_comment.php?comment_id=<?php echo $comment['id']; ?>">Edit Comment</a> |
+                    <a href="forum_section.php?id=<?php echo $sectionId; ?>&delete_comment=<?php echo $comment['id']; ?>" style="color:red;" onclick="return confirm('Are you sure you want to delete this comment?');">Delete Comment</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -97,7 +98,6 @@ include 'kokosy/header.php';
 <?php if (isset($_SESSION['user'])): ?>
     <h3>Add a Comment</h3>
     <form method="POST">
-        <input type="hidden" name="action" value="add_comment">
         <textarea name="comment" rows="4" cols="108" required></textarea><br>
         <button type="submit">Post Comment</button>
     </form>
@@ -105,4 +105,4 @@ include 'kokosy/header.php';
     <p><a href="index.php">Login</a> to add a comment.</p>
 <?php endif; ?>
 
-<?php include 'kokosy/footer.php'; ?>
+<?php include 'partials/footer.php'; ?>

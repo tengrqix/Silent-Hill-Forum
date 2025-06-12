@@ -31,7 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("si", $newUsername, $loggedUserId);
             $stmt->execute();
 
-            $_SESSION['user'] = $newUsername; // Update session username
+            $_SESSION['user'] = $newUsername;
             echo "<p style='color:green;'>Username updated successfully!</p>";
         } else {
             echo "<p style='color:red;'>Username already taken!</p>";
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $check = getimagesize($_FILES["profile_picture"]["tmp_name"]);
         if ($check !== false) {
             if (move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
-                // Save path to DB
+                
                 $stmt = $conn->prepare("UPDATE users SET profile_picture = ? WHERE id = ?");
                 $stmt->bind_param("si", $targetFile, $loggedUserId);
                 $stmt->execute();
@@ -90,7 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userData = $result->fetch_assoc();
 }
 
-include 'kokosy/header.php';
+include 'partials/header.php';
 ?>
 
 <h2>My Profile</h2>
@@ -124,4 +124,4 @@ include 'kokosy/header.php';
 
 <p><a href="forum.php">Back to Forum</a></p>
 
-<?php include 'kokosy/footer.php'; ?>
+<?php include 'partials/footer.php'; ?>
